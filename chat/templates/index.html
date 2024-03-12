@@ -1,0 +1,46 @@
+<html>
+<header>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+</header>
+
+<body>
+    <input type="text" id="query" />
+    <button id="send">Send</button>
+    <div>
+        <p id="bot"></p>
+    </div>
+</body>
+<script>
+    $(document).ready(function () {
+
+        $("#send").click(function () {
+            var query = $("#query").val();
+            var $streamingContent = $('#bot');
+
+            var data = { "query": query };
+
+            var csrfToken = "{{ csrf_token }}";
+            $.ajax({
+                url: '/message',
+                type: 'POST',
+                data: data,
+                headers: {
+                    "X-CSRFToken": csrfToken
+                },
+                xhrFields: {
+                    onprogress: function (e) {
+                        $streamingContent.html(e.currentTarget.response);
+                    }
+                },
+                success: function (data) {
+                    $streamingContent.append(data);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error:', error);
+                }
+            });
+        });
+    });
+</script>
+
+</html>
